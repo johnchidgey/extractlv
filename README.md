@@ -8,7 +8,7 @@ Refer: https://github.com/lightningnetwork/lnd/blob/master/docs/grpc/python.md
 
 Ubuntu: (Steps tested on 19.04, should be similar on more recent releases)
 - Ensure python3 --version reports 3.7.3 or above
-- If you're using an OLD distro like 19.04, you'll probably need to grab the archived repos: 
+- If you're using an OLD distro like 19.04, you'll probably need to grab the archived repos:
 - - sudo sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
 - - sudo apt-get update && sudo apt-get dist-upgrade
 - Install pip3 if not already installed, install it from the default repo, but then upgrade pip and wheel to the latest versions immediately afterward:
@@ -16,20 +16,30 @@ Ubuntu: (Steps tested on 19.04, should be similar on more recent releases)
 - - sudo -H pip3 install --upgrade pip
 - - sudo pip3 install --upgrade wheel
 - - sudo pip3 install testresources setuptools
-- Install the libraries needed for PIP to install the gRPC tools we need to use: 
+- Install the libraries needed for PIP to install the gRPC tools we need to use:
 - - sudo apt-get install libnss3 libnss3-dev libcurl4-gnutls-dev librtmp-dev
 - Finally, you can install the tools themselves:
 - - sudo pip3 install grpcio grpcio-tools googleapis-common-protos pycurl
 
+Alpine: (Steps tested on 3.14)
+- Ensure python3 --version reports 3.7.3 or above (Tested on v3.10.5)
+- Install pip3 if not already installed, install it from the default repo, but then upgrade pip and wheel to the latest versions immediately afterward:
+- - apk add py3-pip
+- - pip3 install --upgrade pip
+- Install the tools themselves:
+- - pip3 install grpcio grpcio-tools googleapis-common-protos pycurl
+
 On a Raspiblitz things are easier since most of the above tools have already been installed:
 - - cd /home/admin
 - Note: Some other optional packages pre-install the LibCurl libraries, but to make sure you have them install them anyway:
-- - sudo apt install libcurl4-gnutls-dev libcurl4-openssl-dev libcurl4-nss-dev 
+- - sudo apt install libcurl4-gnutls-dev libcurl4-openssl-dev libcurl4-nss-dev
 - - export PYCURL_SSL_LIBRARY=nss
 - - sudo pip3 install grpcio grpcio-tools googleapis-common-protos pycurl
 - Note: Upgrade to latest grpcio just in case:
 - - sudo pip3 install --upgrade grpcio
-- From your home directory on the blitz, clone two Git Repos, and download the proto file you need:
+
+Common to all: (Once all dependancies installed)
+- From your home directory clone two Git Repos, and download the proto file you need:
 - - git clone https://github.com/Podcastindex-org/extractlv
 - - cd extractlv
 - - git clone https://github.com/googleapis/googleapis.git
@@ -43,7 +53,7 @@ This simple script can be used in conjunction with the PushOver notification ser
 
 Node Details: The script will run on your local machine (Raspiblitz/Umbrel) or on any hosted Lightning Node with gRPC enabled and port 10009 opened. The default directories are for a Raspiblitz installation. If you want to run it remotely, you need your TLS Certificate and Admin Macaroon extracted from your Node. Put those files in a convenient location on the machine you're calling the script from and update the MACAROON_LOCATION and TLSCERT_LOCATION accordingly. Note that if you have a TLS certificate, it's probably signed against a URL, and some sites use DuckDNS for this purpose. Either way update the NODE_ADDRESS to your Node's URL. If you're running behind TOR you might need to configure further.
 
-This will send one push notification for every Boost-A-Gram received, and by default REMEMBER_LAST_INDEX should be True. This will save a file to the same directory 
+This will send one push notification for every Boost-A-Gram received, and by default REMEMBER_LAST_INDEX should be True. This will save a file to the same directory
 
 The script only looks for those TLV record IDs in the following array, but this can be updated easily as the specification changes:
 
@@ -51,7 +61,7 @@ TLVS = ["7629171", "7629169", "133773310"]
 
 Set up a Cron Tab on the Blitz based on how often you want it to check. For every 5 minutes:
 
-*/5 * * * * cd /home/admin/extractlv && /usr/bin/python /home/admin/extractlv/main.py
+*/5 * * * * cd /[HOME DIRECTORY]/extractlv && /usr/bin/python /[HOME DIRECTORY]/extractlv/main.py
 
 PUSHOVER CUSTOMISATION
 
@@ -82,4 +92,3 @@ v.0.1
 -------
 * Initial Release
 * Supports one by one, push messaging for Boost-A-Grams via PushOver only
-
